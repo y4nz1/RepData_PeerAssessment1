@@ -15,6 +15,7 @@ save it in your current working directory.
 Date       | Version | Comments
 ---------- | ------- | ---------------------------------------------------------
 2016-04-03 | 0       | Initial (Zip file downloaded on 2016-04-01 0730 SGT)
+2016-04-04 | 0.1     | Updated last plot from sum to mean
 
 ## Loading and preprocessing the data
 1. Unzip the file
@@ -124,7 +125,7 @@ data.noNA.perDayType <- mutate(data.noNA, dayType =
                                                                 "Saturday"),
                                       "weekend", "weekday")) %>%
                         group_by(interval, dayType) %>%
-                        summarise(sum(steps.new))
+                        summarise(mean(steps.new))
 names(data.noNA.perDayType)[3] <- "SumSteps"
 
 ggplot(data = data.noNA.perDayType, aes(interval, SumSteps)) + 
