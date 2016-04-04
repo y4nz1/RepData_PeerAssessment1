@@ -1,10 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Linda Wong"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Linda Wong  
 
 ## Coursera - Reproducible Research : Week 1 Course Project 1
 This script assumes that the following zip file `activity.zip` is already saved
@@ -20,7 +15,8 @@ Date       | Version | Comments
 1. Unzip the file
 2. Read in csv file with `na.strings = "NA"` (17,568 rows of 3 columns)
 3. Convert `date` column into Date class
-``` {r echo = TRUE}
+
+```r
 unzip("activity.zip")
 data <- read.csv("activity.csv", na.strings = "NA")
 data$date.new <- as.Date(data$date, "%Y-%m-%d")
@@ -34,7 +30,8 @@ data$date.new <- as.Date(data$date, "%Y-%m-%d")
      + load `ggplot2` library
 3. Calculate and report the mean and median of the total number of steps taken
 per day
-``` {r echo = TRUE}
+
+```r
 data.perDay <- aggregate(data$steps, by = list(data$date.new), FUN = "sum",
                          na.rm = TRUE)
 names(data.perDay) <- c("Date", "SumSteps")
@@ -43,9 +40,24 @@ library(ggplot2)
 ggplot(data = data.perDay, aes(Date, SumSteps)) + 
     stat_summary(fun.y = sum, geom = "bar") +
     labs(title = "Total Steps per Day", x = "Day", y = "Total steps")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)
+
+```r
 paste("Mean steps = ", mean(data.perDay$SumSteps, na.rm = FALSE))
+```
+
+```
+## [1] "Mean steps =  9354.22950819672"
+```
+
+```r
 paste("Median steps = ", median(data.perDay$SumSteps, na.rm = FALSE))
+```
+
+```
+## [1] "Median steps =  10395"
 ```
 
 
@@ -55,7 +67,8 @@ and the average number of steps taken, averaged across all days (y-axis)
      + rename columns in new data frame
 2. Which 5-minute interval, on average across all the days in the dataset, 
 contains the maximum number of steps?
-``` {r echo = TRUE}
+
+```r
 data.perInterval <- aggregate(data$steps, by = list(data$interval),
                               FUN = "mean", na.rm = TRUE)
 names(data.perInterval) <- c("Interval", "AvgSteps")
@@ -63,11 +76,26 @@ names(data.perInterval) <- c("Interval", "AvgSteps")
 ggplot(data = data.perInterval, aes(Interval, AvgSteps)) + geom_line() +
     labs(title = "Average Steps per Interval", x = "Interval",
          y = "Average number of steps")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)
+
+```r
 paste("5-minute interval with maximum average steps = ",
       data.perInterval[with(data.perInterval, AvgSteps == max(AvgSteps)), 1])
+```
+
+```
+## [1] "5-minute interval with maximum average steps =  835"
+```
+
+```r
 paste("With maximum average step = ",
       data.perInterval[with(data.perInterval, AvgSteps == max(AvgSteps)), 2])
+```
+
+```
+## [1] "With maximum average step =  206.169811320755"
 ```
 
 
@@ -89,9 +117,16 @@ of steps?
      + Mean and median are now the same
      + Total daily number of steps has increased as NA values, originally
      ignored, have now a non-negative value
-``` {r echo = TRUE}
-paste("Number of rows with NAs = ", sum(is.na(data)))
 
+```r
+paste("Number of rows with NAs = ", sum(is.na(data)))
+```
+
+```
+## [1] "Number of rows with NAs =  2304"
+```
+
+```r
 ## fill in NAs with mean of 5-minute interval
 library(dplyr, warn.conflicts = FALSE)
 data.noNA <- merge(data, data.perInterval, by.x = "interval", 
@@ -106,9 +141,24 @@ names(data.noNA.perDay) <- c("Date", "SumSteps")
 ggplot(data = data.noNA.perDay, aes(Date, SumSteps)) + 
     stat_summary(fun.y = sum, geom = "bar") +
     labs(title = "Total Steps per Day", x = "Day", y = "Total steps")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)
+
+```r
 paste("Mean steps = ", mean(data.noNA.perDay$SumSteps, na.rm = FALSE))
+```
+
+```
+## [1] "Mean steps =  10766.1886792453"
+```
+
+```r
 paste("Median steps = ", median(data.noNA.perDay$SumSteps, na.rm = FALSE))
+```
+
+```
+## [1] "Median steps =  10766.1886792453"
 ```
 
 
@@ -118,7 +168,8 @@ paste("Median steps = ", median(data.noNA.perDay$SumSteps, na.rm = FALSE))
 2. Make a panel plot containing a time series plot (i.e. `type = "l"`) of the
 5-minute interval (x-axis) and the average number of steps taken, averaged
 across all weekdays or weekend days (y-axis)
-``` {r echo = TRUE}
+
+```r
 data.noNA.perDayType <- mutate(data.noNA, dayType = 
                                ifelse(weekdays(date.new) %in% c("Sunday",
                                                                 "Saturday"),
@@ -131,3 +182,5 @@ ggplot(data = data.noNA.perDayType, aes(interval, SumSteps)) +
     facet_wrap(~dayType, ncol = 1) + geom_line() +
     labs(title = "Average Number of Steps", x = "Interval", y = "Average Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)
